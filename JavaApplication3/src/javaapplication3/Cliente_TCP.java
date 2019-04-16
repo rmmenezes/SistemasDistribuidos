@@ -1,19 +1,26 @@
-package sd_atv_01;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package javaapplication3;
 
 import java.net.*;
 import java.io.*;
 import java.util.Scanner;
 
-public class TCPClient {
+public class Cliente_TCP {
 	public static void main (String args[]) {
-	    Socket clientSocket = null; 
+	    Socket clientSocket = null; // socket do cliente
             Scanner reader = new Scanner(System.in); // ler mensagens via teclado
             
             try{
-                int serverPort = 3333;   
-                InetAddress serverAddr = InetAddress.getByName("127.0.0.1");
+                /* Endereço e porta do servidor */
+                int porta_servidor = 3333;   
+                InetAddress endereco_servidor = InetAddress.getByName("127.0.0.1");
                 
-                clientSocket = new Socket(serverAddr, serverPort);  
+                /* conecta com o servidor */  
+                clientSocket = new Socket(endereco_servidor, porta_servidor);  
                 
                 /* cria objetos de leitura e escrita */
                 DataInputStream in = new DataInputStream( clientSocket.getInputStream());
@@ -45,5 +52,5 @@ public class TCPClient {
                     System.out.println("IO: " + ioe);;
                 }
             }
-     } 
-} 
+     } //main
+} //class
