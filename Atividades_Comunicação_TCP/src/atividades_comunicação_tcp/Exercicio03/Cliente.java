@@ -59,10 +59,24 @@ class ClientThreadEnviar extends Thread {
                 
                 out.writeUTF(buffer);               //envia pro servidor
                 
-                if (buffer.equals("SAIR")) break;
+                if (buffer.equals("EXIT")) break;
                 
-                buffer = in.readUTF();              //aguarda resposta e coloca no buffer
-                System.out.println("O Servidor disse: " + buffer);
+                String buffer_server = in.readUTF();              //aguarda resposta e coloca no buffer
+                System.out.println(buffer_server);
+                if (buffer.equals("FILES")){
+                    int numero_arquivos = Integer.parseInt(buffer_server);
+                    for (int i=0; i<numero_arquivos; i++){
+                        String nome_arquivo = in.readUTF(); 
+                        System.out.println(nome_arquivo);
+                    }
+                }
+                if (buffer.equals("DOWN")){
+                    int numero_arquivos = Integer.parseInt(buffer_server);
+                    for (int i=0; i<numero_arquivos; i++){
+                        String nome_arquivo = in.readUTF(); 
+                        System.out.println(nome_arquivo);
+                    }
+                }
             }
         } catch (EOFException eofe){
             System.out.println("EOF: " + eofe.getMessage());

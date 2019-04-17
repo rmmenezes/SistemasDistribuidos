@@ -2,7 +2,9 @@ package atividades_comunicação_tcp.Exercicio03;
 import java.net.*;
 import java.io.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class Servidor {
     public static void main(String args[]) throws InterruptedException {
@@ -48,7 +50,7 @@ class ClientThread extends Thread {
             while (true) {
                 buffer = in.readUTF();  
                 System.out.println("Cliente disse: " + buffer);
-                
+                String[] comando = buffer.split(" ");
                 if (buffer.equals("TIME")){
                     SimpleDateFormat sdf = new SimpleDateFormat("hh:mm:ss");
                     String time = sdf.format(new Date());
@@ -60,13 +62,34 @@ class ClientThread extends Thread {
                     out.writeUTF(data);
                 }
                 else if (buffer.equals("FILES")){
+                    List<String> lista_de_arquivos = new ArrayList<>();
+                    int numero_de_arquivos = 0;
                     File path = new File("C:\\Users\\Rafael Menezes\\Documents\\NetBeansProjects\\Atividades_Comunicação_TCP\\src\\atividades_comunicação_tcp\\Exercicio03\\DiretorioCompartilhado");
                     File[] listOfFiles = path.listFiles();  
                     for (File file : listOfFiles)
                     {
-                        out.writeUTF(file.getName());
+                        numero_de_arquivos = numero_de_arquivos + 1;
+                        lista_de_arquivos.add(file.getName());
                     }
+                    // Envia o numero de arquivos
+                    out.writeUTF(Integer.toString(numero_de_arquivos));
+                    
+                    for (String file : lista_de_arquivos)
+                    {
+                        DataOutputStream send = new DataOutputStream(clientSocket.getOutputStream());
+                        send.writeUTF(file);
+                    }
+                } else if (comando[0].equals("DOWN")){
+                    File file = new File("C:\\Users\\Rafael Menezes\\Documents\\NetBeansProjects\\Atividades_Comunicação_TCP\\src\\atividades_comunicação_tcp\\Exercicio03\\DiretorioCompartilhado\\" + comando[1]);
+                    byte [] mybytearray = new byte[(int)file.length()];
+                    FileInputStream fis = new FileInputStream(file);
+                    BufferedInputStream bis = new BufferedInputStream(fis);
+                    bis.read(mybytearray,0,mybytearray.length);
+                    System.out.println("Sending " + file + "(" + mybytearray.length + " bytes)");
+                    out.write(mybytearray,0,mybytearray.length);
+                    out.flush();
                 }
+                
                 else if (buffer.equals("EXIT")) break;
                 
             }

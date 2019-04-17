@@ -59,7 +59,7 @@ class ClientThreadEnviar2 extends Thread {
                 
                 out.writeUTF(buffer);               //envia pro servidor
                 
-                if (buffer.equals("SAIR")) break;
+                if (buffer.equals("EXIT")) break;
                 
                 buffer = in.readUTF();              //aguarda resposta e coloca no buffer
                 System.out.println("O Servidor disse: " + buffer);
