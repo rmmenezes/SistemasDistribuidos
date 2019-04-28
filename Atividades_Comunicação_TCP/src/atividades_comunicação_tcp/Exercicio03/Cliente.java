@@ -1,9 +1,16 @@
 package atividades_comunicação_tcp.Exercicio03;
 
+import static com.sun.org.apache.xerces.internal.util.FeatureState.is;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
@@ -71,11 +78,26 @@ class ClientThreadEnviar extends Thread {
                     }
                 }
                 if (buffer.equals("DOWN")){
-                    int numero_arquivos = Integer.parseInt(buffer_server);
-                    for (int i=0; i<numero_arquivos; i++){
-                        String nome_arquivo = in.readUTF(); 
-                        System.out.println(nome_arquivo);
-                    }
+                    int current = 0;
+                    int FILE_SIZE = 21;
+                    byte [] mybytearray  = new byte [FILE_SIZE];
+                    InputStream is = clienteSocket.getInputStream();
+                    FileOutputStream fos = new FileOutputStream("C:\\ProgramData\\NEWteste.txt");
+                    BufferedOutputStream bos = new BufferedOutputStream(fos);
+                    int bytesRead = is.read(mybytearray,0,mybytearray.length);
+                    current = bytesRead;
+                    
+                    do {
+                        bytesRead = is.read(mybytearray, current, (mybytearray.length-current));
+                        if(bytesRead >= 0) current += bytesRead;
+                    } while(bytesRead > -1);
+                    
+                    bos.write(mybytearray, 0 , current);
+                    bos.flush();
+                    System.out.println("File " + "C:\\ProgramData\\NEWteste.txt" + " downloaded (" + current + " bytes read)");
+                    
+                    if (fos != null) fos.close();
+                    if (bos != null) bos.close();
                 }
             }
         } catch (EOFException eofe){

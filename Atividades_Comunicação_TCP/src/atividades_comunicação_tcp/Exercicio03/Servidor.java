@@ -64,7 +64,7 @@ class ClientThread extends Thread {
                 else if (buffer.equals("FILES")){
                     List<String> lista_de_arquivos = new ArrayList<>();
                     int numero_de_arquivos = 0;
-                    File path = new File("C:\\Users\\Rafael Menezes\\Documents\\NetBeansProjects\\Atividades_Comunicação_TCP\\src\\atividades_comunicação_tcp\\Exercicio03\\DiretorioCompartilhado");
+                    File path = new File("C:\\ProgramData");
                     File[] listOfFiles = path.listFiles();  
                     for (File file : listOfFiles)
                     {
@@ -80,7 +80,7 @@ class ClientThread extends Thread {
                         send.writeUTF(file);
                     }
                 } else if (comando[0].equals("DOWN")){
-                    File file = new File("C:\\Users\\Rafael Menezes\\Documents\\NetBeansProjects\\Atividades_Comunicação_TCP\\src\\atividades_comunicação_tcp\\Exercicio03\\DiretorioCompartilhado\\" + comando[1]);
+                    File file = new File("C:\\ProgramData\\" + comando[1]);
                     byte [] mybytearray = new byte[(int)file.length()];
                     FileInputStream fis = new FileInputStream(file);
                     BufferedInputStream bis = new BufferedInputStream(fis);
@@ -88,6 +88,7 @@ class ClientThread extends Thread {
                     System.out.println("Sending " + file + "(" + mybytearray.length + " bytes)");
                     out.write(mybytearray,0,mybytearray.length);
                     out.flush();
+                    System.out.println("Done.");
                 }
                 
                 else if (buffer.equals("EXIT")) break;
