@@ -1,4 +1,4 @@
-package atividades_comunicação_tcp.Exercicio03;
+package atividades_comunicação_tcp.Exercicio05;
 
 import static com.sun.org.apache.xerces.internal.util.FeatureState.is;
 import java.io.BufferedInputStream;
@@ -79,25 +79,14 @@ class ClientThreadEnviar extends Thread {
 
                 String buffer_server = in.readUTF();              //aguarda resposta e coloca no buffer
                 System.out.println(buffer_server);
-                if (buffer.equals("FILES")) {
-                    int numero_arquivos = Integer.parseInt(buffer_server);
-                    for (int i = 0; i < numero_arquivos; i++) {
-                        String nome_arquivo = in.readUTF();
-                        System.out.println(nome_arquivo);
-                    }
-                }
-                if (bufferSplit[0].equals("DOWN")) {
-                    System.out.println("mcscsodkcsockok");
-                    int fileSize = (int) in.readLong();
+                if (bufferSplit[0].equals("GETFILE")) {
                     FileOutputStream fos;
-                    fos = new FileOutputStream("C:\\Users\\Rafael Menezes\\nwe.txt");
-                    System.out.println(fileSize);
+                    fos = new FileOutputStream("C:\\Users\\Rafael Menezes\\"+bufferSplit[1]);
                     int bufferSize = 4096;
                     byte[] buff = new byte[bufferSize];
                     int read;
                     while ((read = in.read(buff)) != -1) {
                         fos.write(buff, 0, read);
-                        System.out.println("received" + read);
                         if (read != bufferSize) {
                             break;
                         }
