@@ -7,6 +7,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,7 +56,7 @@ class ClientThread extends Thread {
     @Override
     public void run() {
         try {
-            FileWriter writer = new FileWriter("C:\\ProgramData\\log.txt", true);
+            FileWriter arq = new FileWriter("C:\\ProgramData\\log.txt", true);
             ArrayList<String> log = new ArrayList<>(); 
             String buffer;
             
@@ -72,10 +73,13 @@ class ClientThread extends Thread {
                 String[] comando = buffer.split(" ");
                 System.out.println("Cliente disse: " + buffer);
                 
+                PrintWriter gravarArq = new PrintWriter(arq);
+                Date timenow = new Date();
+                 
+        
                 
-
                 if (comando[0].equals("DELETE")) {
-                    System.out.println("############### OPAA é DELETEEE ################");
+                    
                     //Log 1 porque o cliente escreveu e mandou algo ou seja (requisiçao)           
                     log.add("1");
                     //Log 1 porque o cliente codigo do comando (DELETE)   
@@ -96,15 +100,38 @@ class ClientThread extends Thread {
                         }
                     }
                     
+                    
+                    gravarArq.printf("Data Time: %s                                %n", timenow);
+                    gravarArq.printf("Requisição: requisição (1)                   %n");
+                    gravarArq.printf("Código do comando: 2                         %n");
+                    gravarArq.printf("Tamanho do nome do arquivo: %d               %n", name_files.length());
+                    gravarArq.printf("variável: %s                                 %n", name_files);
+                    gravarArq.printf(".............................................%n");
+                    
+
+                    
                     if (hasFile) {
-                        log.add("1");
                         buffer = "Removido com Sucesso" + name_files;
                         out.writeUTF(buffer);
+                        gravarArq.printf("Data Time: %s                                %n", timenow);
+                        gravarArq.printf("Requisição: resposta(2)                      %n");
+                        gravarArq.printf("Código do comando: 2                         %n");
+                        gravarArq.printf("Status code: SUCCESS (1)                     %d");
+                        gravarArq.printf(".............................................%n");
+                        arq.close();
                     } else {
-                        log.add("2");
+                        gravarArq.printf("Data Time: %s                                %n", timenow);
+                        gravarArq.printf("Requisição: requisição (1)                   %n");
+                        gravarArq.printf("Código do comando: 2                         %n");
+                        gravarArq.printf("Tamanho do nome do arquivo: %d               %n", name_files.length());
+                        gravarArq.printf("variável: %s                                 %n", name_files);
+                        gravarArq.printf(".............................................%n");
+                        arq.close();
                         buffer = "Arquivo não encontrado";
                         out.writeUTF(buffer);
                     }
+                    
+                    
 
                 } else if (comando[0].equals("GETFILESLIST")) {
                     name_files = "";
@@ -118,6 +145,20 @@ class ClientThread extends Thread {
                                                 
                         buffer = name_files;
                         out.writeUTF(buffer);
+                        gravarArq.printf("Data Time: %s                                %n", timenow);
+                        gravarArq.printf("Requisição: requisição (1)                   %n");
+                        gravarArq.printf("Código do comando: 3                         %n");
+                        gravarArq.printf("Tamanho do nome do arquivo: 0                %n");
+                        gravarArq.printf("variável: NULL                               %n");
+                        gravarArq.printf(".............................................%n");
+                        
+                        
+                        gravarArq.printf("Data Time: %s                                %n", timenow);
+                        gravarArq.printf("Requisição: resposta(2)                      %n");
+                        gravarArq.printf("Código do comando: 3                         %n");
+                        gravarArq.printf("Status code: SUCCESS (1)                     %d");
+                        gravarArq.printf(".............................................%n");
+                        arq.close();
                         
                 } else if (comando[0].equals("GETFILE")) {
                     FileInputStream fis;
@@ -135,6 +176,22 @@ class ClientThread extends Thread {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    
+                gravarArq.printf("Data Time: %s                                %n", timenow);
+                gravarArq.printf("Requisição: requisição (1)                   %n");
+                gravarArq.printf("Código do comando: 4                         %n");
+                gravarArq.printf("Tamanho do nome do arquivo: %s               %n", comando[1].length());
+                gravarArq.printf("variável: %s                                 %n", comando[1]);
+                gravarArq.printf(".............................................%n");
+                
+                
+                gravarArq.printf("Data Time: %s                                %n", timenow);
+                gravarArq.printf("Requisição: resposta(2)                      %n");
+                gravarArq.printf("Código do comando: 4                         %n");
+                gravarArq.printf("Status code: SUCCESS (1)                     %d");
+                gravarArq.printf(".............................................%n");
+                arq.close();
+
                 } else if (comando[0].equals("EXIT")) {
                     
                     break;
