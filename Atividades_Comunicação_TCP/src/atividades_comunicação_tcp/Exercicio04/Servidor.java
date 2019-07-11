@@ -1,117 +1,87 @@
 package atividades_comunicação_tcp.Exercicio04;
-import atividades_comunicação_tcp.Exercicio03.*;
-import static com.sun.management.jmx.Trace.send;
-import java.net.*;
-import java.io.*;
-import java.text.SimpleDateFormat;
+
+import atividades_comunicação_tcp.Exercicio02.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Scanner;
 
 public class Servidor {
-    public static void main(String args[]) throws InterruptedException {
-        try {
-            int serverPort = 6666; 
-            ServerSocket listenSocket = new ServerSocket(serverPort);
+     public static void main(String[] args) throws InterruptedException{
+            Socket clienteSocket = null;
+            try {
+                // isso so faz uma vez... logo quando executa!
+                int porta_servidor = 6666;   
+                List<Socket> clientes = new ArrayList<>();
+                ServerSocket servidorSocket = new ServerSocket(porta_servidor);
+                
+                while(true){
+                    System.out.println("Servidor aguardando conexão ...");
+                    Socket clientSocket = servidorSocket.accept();
+                    clientes.add(clientSocket);
+                    ClientThreadReceber01 ThreadReceber = new ClientThreadReceber01(clientSocket, clientes);
+                    ThreadReceber.start();
 
-            while (true) {
-                System.out.println("Servidor aguardando conexao ...");
-                Socket clientSocket = listenSocket.accept();
-                System.out.println("Cliente conectado ... Criando thread ...");
-                ClientThread c = new ClientThread(clientSocket);
-                c.start();
-                c.join();
-            }
-        } catch (IOException e) {
-            System.out.println("Listen socket:" + e.getMessage());
+                }
+            } catch (EOFException eofe){
+                System.out.println("EOF: " + eofe.getMessage());
+            } catch (IOException ioe){
+                System.out.println("IOE: " + ioe.getMessage());
         }
-    } 
+    }
 }
 
-
-class ClientThread extends Thread {
-
+class ClientThreadReceber01 extends Thread {
     DataInputStream in;
-    DataOutputStream out;
-    Socket clientSocket;
-
-    public ClientThread(Socket clientSocket) {
+    Socket clienteSocket;  
+    List<Socket> usuarios;
+    
+    //metodo construtor
+    ClientThreadReceber01(Socket clienteSocket, List<Socket> clientes){
         try {
-            this.clientSocket = clientSocket;
-            in = new DataInputStream(clientSocket.getInputStream());
-            out = new DataOutputStream(clientSocket.getOutputStream());
-        } catch (IOException ioe) {
+            this.clienteSocket = clienteSocket;
+            this.usuarios = clientes;
+            in = new DataInputStream(clienteSocket.getInputStream());
+        } catch (IOException ioe){
             System.out.println("Connection:" + ioe.getMessage());
         }
     }
-
+    
+    //metodo a ser executado assim que invocada a classe
     @Override
-    public void run() {
+    public void run(){
         try {
-            String buffer = "";
-            while (true) {
-                buffer = in.readUTF();  
-                System.out.println("Cliente disse: " + buffer);
-                String[] comando = buffer.split(" ");
-                if (buffer.equals("DELETE")){
-                }
-                else if (buffer.equals("GETFILESLIST")){
-                    int i;
-                    File diretorio = new File("C:\\ProgramData\\");
-                    File arquivos[] = diretorio.listFiles();
-                    for (i = 0; i < arquivos.length; i++) {
-                        File arquivo = arquivos[i];
-                        String nome = arquivo.getName();
-                        out.writeUTF(nome);
+            // isso faz infinitas vezes ...
+            while(true) {
+                String buffer = in.readUTF();             //aguarda resposta e coloca no buffer
+                System.out.println("O Cliente disse: " + buffer);
+                for(Socket user: usuarios){
+                    if (user != clienteSocket){
+                        DataOutputStream send = new DataOutputStream(user.getOutputStream());
+                        send.writeUTF(buffer);
+                        System.out.println("DISTRIBUIDO");
                     }
-                    out.writeUTF("Quantidade de Arquivos: " + i);
                 }
-                else if (buffer.equals("FILES")){
-                } else if (comando[0].equals("DOWN")){
-                    File diretorio = new File("C:\\ProgramData\\");
-                    File files[] = diretorio.listFiles();
-                    boolean oi = false;
-                    for (int i = 0; i < files.length; i++) {
-                        File arquivo = files[i];
-                        String nome = arquivo.getName();
-                        if (comando[1] == null ? nome == null : comando[1].equals(nome)) {
-                            // se o arquivo existir seta true
-                            oi = true;
-                        }
-                    }
-                    if (oi) {
-                        // instancia um objeto File (arquivo requisitado)
-                        File arquivo = new File("C:\\ProgramData\\" + comando[1]);
-                        FileInputStream fis = new FileInputStream(arquivo);
-                        byte b[] = new byte[(int) arquivo.length()];
-                        BufferedInputStream bis = new BufferedInputStream(fis);
-                        bis.read(b, 0, b.length);
+                if (buffer.equals("SAIR")) break;
 
-                        // manda nome do arquivo o tamanho e o arquivo
-                        //out.writeUTF("Arquivo: " + arquivo.getName());
-                        //out.writeInt((int) arquivo.length());
-                        out.write(b, 0, b.length);
-                    }
-                }
-                else if (buffer.equals("EXIT")) break;
-                
             }
-        } catch (EOFException eofe) {
+        } catch (EOFException eofe){
             System.out.println("EOF: " + eofe.getMessage());
-        } catch (IOException ioe) {
+        } catch (IOException ioe){
             System.out.println("IOE: " + ioe.getMessage());
         } finally {
             try {
                 in.close();
-                out.close();
-                clientSocket.close();
+                clienteSocket.close();
             } catch (IOException ioe) {
                 System.err.println("IOE: " + ioe);
             }
+            System.out.println("Thread comunicação cliente finalizada.");
         }
     }
-} //class
-
-
+}

@@ -23,6 +23,8 @@ public class Servidor{
                 
                 String msg_cliente = new String(dgramPacket.getData(), 0, dgramPacket.getLength());
                 System.out.println("Cliente: " + msg_cliente);
+                        
+                System.out.println(msg_cliente.substring(3, msg_cliente.length()));
                 
                 if(msg_cliente.equals("EXIT")){
                     break;
@@ -31,23 +33,26 @@ public class Servidor{
                 name_files = "";
                 listOfFiles = folder.listFiles();
                 
+                String string_input = msg_cliente.substring(3, msg_cliente.length());
                 
+
                 for (File file : listOfFiles) {
                     if (file.isFile()) {
-                        name_files += "\n" + file.getName();
-                        
-                        byte[] req_res = "2".getBytes();
-                        byte[] name_file_size = Integer.toString(file.getName().length()).getBytes();
-                        byte[] name_file = file.getName().getBytes();
+                        if (file.getName().regionMatches(true, 0, string_input, 0, string_input.length())){
+                            name_files += "\n" + file.getName();
 
-                        byte[] msg_resposta_item = new byte[req_res.length + name_file_size.length + name_file.length];
-                        System.arraycopy(req_res, 0, msg_resposta_item, 0, req_res.length);
-                        System.arraycopy(name_file_size, 0, msg_resposta_item, req_res.length, name_file_size.length);
-                        System.arraycopy(name_file, 0, msg_resposta_item, req_res.length + name_file_size.length, name_file.length);
-                        
-                        DatagramPacket r = new DatagramPacket(msg_resposta_item, msg_resposta_item.length, dgramPacket.getAddress(), dgramPacket.getPort());
-                        dgramSocket.send(r);
+                            byte[] req_res = "2".getBytes();
+                            byte[] name_file_size = Integer.toString(file.getName().length()).getBytes();
+                            byte[] name_file = file.getName().getBytes();
 
+                            byte[] msg_resposta_item = new byte[req_res.length + name_file_size.length + name_file.length];
+                            System.arraycopy(req_res, 0, msg_resposta_item, 0, req_res.length);
+                            System.arraycopy(name_file_size, 0, msg_resposta_item, req_res.length, name_file_size.length);
+                            System.arraycopy(name_file, 0, msg_resposta_item, req_res.length + name_file_size.length, name_file.length);
+
+                            DatagramPacket r = new DatagramPacket(msg_resposta_item, msg_resposta_item.length, dgramPacket.getAddress(), dgramPacket.getPort());
+                            dgramSocket.send(r);
+                        }
                     }
                 }
                 

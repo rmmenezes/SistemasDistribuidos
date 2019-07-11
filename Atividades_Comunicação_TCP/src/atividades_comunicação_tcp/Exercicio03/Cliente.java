@@ -90,7 +90,7 @@ class ClientThreadEnviar extends Thread {
                     System.out.println("mcscsodkcsockok");
                     int fileSize = (int) in.readLong();
                     FileOutputStream fos;
-                    fos = new FileOutputStream("C:\\Users\\Rafael Menezes\\nwe.txt");
+                    fos = new FileOutputStream("C:\\Users\\Rafael Menezes\\nwe.jpg");
                     System.out.println(fileSize);
                     int bufferSize = 4096;
                     byte[] buff = new byte[bufferSize];
