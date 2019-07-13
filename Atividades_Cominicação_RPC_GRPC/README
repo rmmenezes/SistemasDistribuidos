@@ -1,0 +1,5 @@
+INSTALL
+------
+
+pip3.4 install grpcio
+pip3.4 install grpcio-tools
