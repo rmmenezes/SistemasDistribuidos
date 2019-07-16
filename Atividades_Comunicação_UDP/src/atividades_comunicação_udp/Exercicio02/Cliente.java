@@ -13,7 +13,7 @@ public class Cliente {
             InetAddress endereco_servidor = InetAddress.getByName("127.0.0.1");
             int porta_servidor = 6666;
             
-            File file = new File("C:\\ProgramData\\rafael.txt");
+            File file = new File("C:\\ProgramData\\img_in.JPG");
             InputStream is = new FileInputStream(file);
             long length = file.length();
             int tamData = 1024;                      //tamanho do data do datagrama

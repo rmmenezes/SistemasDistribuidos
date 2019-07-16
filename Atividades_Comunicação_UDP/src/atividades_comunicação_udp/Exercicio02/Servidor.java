@@ -6,7 +6,7 @@ import java.io.*;
 public class Servidor {
     public static void main(String args[]) throws IOException {
    
-        try (FileWriter writer = new FileWriter("C:\\ProgramData\\rafael2.txt", true)) {
+        try (FileWriter writer = new FileWriter("C:\\ProgramData\\ing_out.JPG", true)) {
             DatagramSocket dgramSocket = new DatagramSocket(6666); // cria um socket datagrama em uma porta especifica
             String msg = "";
             while (true) {
@@ -27,4 +27,3 @@ public class Servidor {
 
        
         
-
